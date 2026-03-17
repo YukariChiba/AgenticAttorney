@@ -1,0 +1,4 @@
+autogen-agentchat
+autogen-ext[openai,mcp]
+rich
+python-frontmatter
