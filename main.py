@@ -91,6 +91,10 @@ async def main():
 
     await mcp_manager.cleanup()
 
+    choice = input("辩论已结束，保存此次记录？[Y/n]: ").strip().lower() or 'y'
+    if choice == 'y':
+        savefile = formatter.savelog()
+        print(f"记录已保存：{savefile}")
 
 if __name__ == "__main__":
     asyncio.run(main())

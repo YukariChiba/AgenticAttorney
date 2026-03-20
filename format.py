@@ -1,3 +1,7 @@
+import json
+import os
+from uuid import uuid4
+
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import (
     BaseAgentEvent,
@@ -22,11 +26,13 @@ class Formatter:
     namemap: dict[str, str]
     console: Console
     status: Status | None
+    fulllog: list[tuple[str, str]]
 
     def __init__(self, namemap: dict[str, str] | None = None) -> None:
         self.namemap = namemap if namemap is not None else {}
         self.console = Console()
         self.status = None
+        self.fulllog = []
 
     def _get_styling(self, source: str) -> tuple[str, str, str]:
         display_name: str = self.namemap.get(source, source)
@@ -37,6 +43,13 @@ class Formatter:
         elif source in teams.W:
             return display_name, "[bold purple]", "[/bold purple]"
         return display_name, "[bold yellow]", "[/bold yellow]"
+
+    def savelog(self, filename=uuid4()):
+        os.makedirs("logs", exist_ok=True)
+        savefile = f"logs/{filename}.json"
+        with open(savefile, "w", encoding="utf-8") as f:
+            json.dump(self.fulllog, f, indent=4, ensure_ascii=False)
+        return savefile
 
     def fmtsys(self, text):
         self.console.rule(
@@ -76,6 +89,7 @@ class Formatter:
                     title_align="left",
                 )
             )
+            self.fulllog.append((f"{display_name} ({source})", event.content))
         if isinstance(event, ThoughtEvent):
             self.console.print(
                 Panel(
