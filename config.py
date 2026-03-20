@@ -47,6 +47,8 @@ class TeamsConfig:
     N: list[str]
     J: str
     JF: str
+    W: list[str]
+    JR: str | None
 
 
 teams: TeamsConfig = TeamsConfig(
@@ -54,6 +56,13 @@ teams: TeamsConfig = TeamsConfig(
     N=["Phoenix_Wright", "Apollo_Justice", "Mia_Fey"],
     J="Judge",
     JF="Judge_Final",
+    W=[
+        "Dick_Gumshoe",
+        "Ema_Skye",
+        "Larry_Butz",
+        "Lotta_Hart",
+    ],
+    JR="Jury",
 )
 
 max_words: int = 300

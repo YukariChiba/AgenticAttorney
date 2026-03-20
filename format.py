@@ -34,6 +34,8 @@ class Formatter:
             return display_name, "[bold blue]", "[/bold blue]"
         elif source in teams.N:
             return display_name, "[bold red]", "[/bold red]"
+        elif source in teams.W:
+            return display_name, "[bold purple]", "[/bold purple]"
         return display_name, "[bold yellow]", "[/bold yellow]"
 
     def fmtsys(self, text):
@@ -84,6 +86,9 @@ class Formatter:
                 )
             )
         if isinstance(event, SelectSpeakerEvent):
+            if teams.JR and source in teams.JR:
+                # 陪审团不需要申请发言
+                return
             self.console.print(
                 Panel(
                     "申请发言！",

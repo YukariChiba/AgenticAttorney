@@ -19,6 +19,7 @@
 
 - 正方检察官：{affirmative_agents}
 - 反方律师：{negative_agents}
+- 证人：{witness_agents}
 
 >（法庭全场哗然，随后安静）
 

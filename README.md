@@ -19,7 +19,7 @@
 - 修改 `init.md` 编辑辩论开始时的提示词
 - 修改 `prepare.md` 编辑双方准备阶段的提示词
 - 修改 `final.md` 编辑最终审判的提示词
-- 修改 `agents/*.md` 编辑单个角色（包含裁判官）的提示词
+- 修改 `agents/*.md` 编辑单个角色的提示词
 - 修改 `topics/*.md` 编辑案件及介绍
 
 有以下变量可供使用：
@@ -29,6 +29,7 @@
 - `{negative_stance}`：反方观点
 - `{affirmative_agents}`：正方辩手列表
 - `{negative_agents}`：反方辩手列表
+- `{witness_agents}`：证人列表
 - `{debate_topic}`：辩论主题
 - `{debate_topic_full}`：案件介绍全文
 - `{max_words}`：每次发言长度
