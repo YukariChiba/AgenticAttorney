@@ -33,17 +33,17 @@ async def main():
     mcp_manager = McpToolManager()
     all_tools = await mcp_manager.setup()
 
-    A1, N1, Judge, Judge_Final, AllAgents, namemap = build_all_agents(all_tools)
+    FirstProsecution, FirstDefense, Judge, Judge_Final, AllAgents, namemap = build_all_agents(all_tools)
 
     formatter.namemap = namemap
 
     formatter.fmtsys("赛前准备阶段（双方正在后台查阅卷宗...）")
 
-    async for event in A1.run_stream(
+    async for event in FirstProsecution.run_stream(
         task=TextMessage(content=load_prompt("prepare").content, source=Judge.name)
     ):
         formatter.fmtmsg(event)
-    async for event in N1.run_stream(
+    async for event in FirstDefense.run_stream(
         task=TextMessage(content=load_prompt("prepare").content, source=Judge.name)
     ):
         formatter.fmtmsg(event)

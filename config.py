@@ -43,26 +43,26 @@ negative_stance: str = str(topic_md.metadata.get("negative_stance"))
 
 @dataclass(frozen=True)
 class TeamsConfig:
-    A: list[str]
-    N: list[str]
-    J: str
-    JF: str
-    W: list[str]
-    JR: str | None
+    Prosecution: list[str]
+    Defense: list[str]
+    Judge: str
+    JudgeFinal: str
+    Witness: list[str]
+    Jury: str | None
 
 
 teams: TeamsConfig = TeamsConfig(
-    A=["Manfred_von_Karma", "Miles_Edgeworth", "Godot"],
-    N=["Phoenix_Wright", "Apollo_Justice", "Mia_Fey"],
-    J="Judge",
-    JF="Judge_Final",
-    W=[
+    Prosecution=["Manfred_von_Karma", "Miles_Edgeworth", "Godot"],
+    Defense=["Phoenix_Wright", "Apollo_Justice", "Mia_Fey"],
+    Judge="Judge",
+    JudgeFinal="Judge_Final",
+    Witness=[
         "Dick_Gumshoe",
         "Ema_Skye",
         "Larry_Butz",
         "Lotta_Hart",
     ],
-    JR="Jury",
+    Jury="Jury",
 )
 
 max_words: int = 300

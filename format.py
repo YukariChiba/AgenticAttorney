@@ -26,7 +26,7 @@ class Formatter:
     namemap: dict[str, str]
     console: Console
     status: Status | None
-    fulllog: list[tuple[str, str]]
+    fulllog: list[tuple[str, str, str, str]]
 
     def __init__(self, namemap: dict[str, str] | None = None) -> None:
         self.namemap = namemap if namemap is not None else {}
@@ -34,15 +34,21 @@ class Formatter:
         self.status = None
         self.fulllog = []
 
-    def _get_styling(self, source: str) -> tuple[str, str, str]:
+    def _get_styling(self, source: str) -> tuple[str, str, str, str]:
         display_name: str = self.namemap.get(source, source)
-        if source in teams.A:
-            return display_name, "[bold blue]", "[/bold blue]"
-        elif source in teams.N:
-            return display_name, "[bold red]", "[/bold red]"
-        elif source in teams.W:
-            return display_name, "[bold purple]", "[/bold purple]"
-        return display_name, "[bold yellow]", "[/bold yellow]"
+        if source in teams.Prosecution:
+            return display_name, "[bold blue]", "[/bold blue]", "Prosecution"
+        elif source in teams.Defense:
+            return display_name, "[bold red]", "[/bold red]", "Defense"
+        elif source in teams.Witness:
+            return display_name, "[bold purple]", "[/bold purple]", "Witness"
+        elif teams.Jury and source in teams.Jury:
+            return display_name, "[bold yellow]", "[/bold yellow]", "Jury"
+        elif source in teams.Judge:
+            return display_name, "[bold yellow]", "[/bold yellow]", "Judge"
+        elif source in teams.JudgeFinal:
+            return display_name, "[bold yellow]", "[/bold yellow]", "Judge"
+        return display_name, "[bold yellow]", "[/bold yellow]", "Unknown"
 
     def savelog(self, filename=uuid4()):
         os.makedirs("logs", exist_ok=True)
@@ -71,7 +77,7 @@ class Formatter:
         source: str = getattr(event, "source", "Unknown") or "System"
         if isinstance(event, SelectSpeakerEvent):
             source = event.content[0]
-        display_name, c_start, c_end = self._get_styling(source)
+        display_name, c_start, c_end, char_type = self._get_styling(source)
         title_prefix = f"{c_start}【{display_name}】{c_end}"
 
         if isinstance(event, ModelClientStreamingChunkEvent):
@@ -89,7 +95,7 @@ class Formatter:
                     title_align="left",
                 )
             )
-            self.fulllog.append((f"{display_name} ({source})", event.content))
+            self.fulllog.append((display_name,source,char_type,event.content))
         if isinstance(event, ThoughtEvent):
             self.console.print(
                 Panel(
@@ -100,7 +106,7 @@ class Formatter:
                 )
             )
         if isinstance(event, SelectSpeakerEvent):
-            if teams.JR and source in teams.JR:
+            if teams.Jury and source in teams.Jury:
                 # 陪审团不需要申请发言
                 return
             self.console.print(

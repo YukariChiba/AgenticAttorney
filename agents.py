@@ -80,13 +80,16 @@ def build_all_agents(
     namemap: dict[str, str] = {}
     all_agents: list[AssistantAgent] = []
 
-    def load_agent(
-        config_name: str, stance: str | None = None, agent_type: str = "debate"
-    ) -> AssistantAgent:
+    def load_agent(config_name: str, agent_type: str = "debate") -> AssistantAgent:
+        stance = None
+        if agent_type == "prosecution":
+            stance = affirmative_stance
+        if agent_type == "defense":
+            stance = negative_stance
         md: frontmatter.Post = load_prompt(f"agents/{agent_type}/{config_name}", stance)
         desc = str(md.metadata.get("desc", ""))
 
-        if agent_type == "debate":
+        if agent_type == "prosecution" or agent_type == "defense":
             agent = create_debate_agent(config_name, md.content, desc, all_tools)
         elif agent_type == "witness":
             agent = create_witness_agent(config_name, md.content, desc, all_tools)
@@ -103,19 +106,19 @@ def build_all_agents(
         return agent
 
     a_agents: list[AssistantAgent] = [
-        load_agent(cfg, affirmative_stance, "debate") for cfg in teams.A
+        load_agent(cfg, "prosecution") for cfg in teams.Prosecution
     ]
     n_agents: list[AssistantAgent] = [
-        load_agent(cfg, negative_stance, "debate") for cfg in teams.N
+        load_agent(cfg, "defense") for cfg in teams.Defense
     ]
 
-    judge: AssistantAgent = load_agent(teams.J, None, "judge")
-    judge_final: AssistantAgent = load_agent(teams.JF, None, "judge")
+    judge: AssistantAgent = load_agent(teams.Judge, "judge")
+    judge_final: AssistantAgent = load_agent(teams.JudgeFinal, "judge")
 
-    for witness_cfg in teams.W:
-        load_agent(witness_cfg, None, "witness")
+    for witness_cfg in teams.Witness:
+        load_agent(witness_cfg, "witness")
 
-    if teams.JR:
-        load_agent(teams.JR, None, "jury")
+    if teams.Jury:
+        load_agent(teams.Jury, "jury")
 
     return (a_agents[0], n_agents[0], judge, judge_final, all_agents, namemap)

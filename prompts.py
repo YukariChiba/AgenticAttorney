@@ -29,20 +29,20 @@ def load_prompt(file: str, stance: str | None = None) -> frontmatter.Post:
         ),
         "{affirmative_agents}": ", ".join(
             [
-                f"{load_frontmatter('agents/debate/' + agent).get('name') or agent} ({agent})"
-                for agent in teams.A
+                f"{load_frontmatter('agents/prosecution/' + agent).get('name') or agent} ({agent})"
+                for agent in teams.Prosecution
             ]
         ),
         "{negative_agents}": ", ".join(
             [
-                f"{load_frontmatter('agents/debate/' + agent).get('name') or agent} ({agent})"
-                for agent in teams.N
+                f"{load_frontmatter('agents/defense/' + agent).get('name') or agent} ({agent})"
+                for agent in teams.Defense
             ]
         ),
         "{witness_agents}": ", ".join(
             [
                 f"{load_frontmatter('agents/witness/' + agent).get('name') or agent} ({agent})"
-                for agent in teams.W
+                for agent in teams.Witness
             ]
         ),
     }
