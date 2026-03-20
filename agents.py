@@ -2,12 +2,9 @@ from typing import Any, cast
 
 import frontmatter
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core.model_context import BufferedChatCompletionContext
 
 from config import (
     affirmative_stance,
-    max_buffer,
-    max_rounds,
     model_client,
     negative_stance,
     teams,
@@ -29,7 +26,6 @@ def create_debate_agent(
         model_client_stream=True,
         tools=cast(list[Any], tools),
         reflect_on_tool_use=True,
-        model_context=BufferedChatCompletionContext(buffer_size=max_buffer),
     )
 
 
@@ -39,9 +35,9 @@ def create_judge_agent(
     return AssistantAgent(
         name=agent_name,
         system_message=system_msg,
+        model_client_stream=True,
         description=agent_desc,
         model_client=model_client,
-        model_context=BufferedChatCompletionContext(buffer_size=max_rounds * 2 + 2),
     )
 
 
@@ -50,13 +46,12 @@ def create_witness_agent(
 ) -> AssistantAgent:
     return AssistantAgent(
         name=agent_name,
-        system_message=f"{common_sysmsg}\n{system_msg}",
+        system_message=system_msg,
         description=agent_desc,
         model_client=model_client,
         model_client_stream=True,
         tools=cast(list[Any], tools),
         reflect_on_tool_use=True,
-        model_context=BufferedChatCompletionContext(buffer_size=max_buffer),
     )
 
 
@@ -66,9 +61,9 @@ def create_jury_agent(
     return AssistantAgent(
         name=agent_name,
         system_message=system_msg,
+        model_client_stream=True,
         description=agent_desc,
         model_client=model_client,
-        model_context=BufferedChatCompletionContext(buffer_size=max_rounds * 2 + 2),
     )
 
 

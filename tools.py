@@ -33,6 +33,11 @@ servers = [
     StdioServerParams(
         command="uvx", args=["mcp-server-fetch"], read_timeout_seconds=20
     ),
+    StdioServerParams(
+        command="npx",
+        args=["-y", "@jjfather/civil-code-of-china-mcp"],
+        read_timeout_seconds=20,
+    ),
 ]
 
 

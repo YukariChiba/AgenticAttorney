@@ -61,12 +61,12 @@ class Formatter:
         display_name, c_start, c_end = self._get_styling(source)
         title_prefix = f"{c_start}【{display_name}】{c_end}"
 
+        if isinstance(event, ModelClientStreamingChunkEvent):
+            return  # WIP
+
         if self.status:
             self.status.stop()
             self.status = None
-
-        if isinstance(event, ModelClientStreamingChunkEvent):
-            return  # WIP
 
         if isinstance(event, TextMessage):
             self.console.print(
@@ -97,7 +97,7 @@ class Formatter:
                     style="italic bright_black",
                 )
             )
-            self.status = self.console.status(f"{title_prefix} 正在组织语言...")
+            self.status = self.console.status(f"{title_prefix} 正在思考...")
             self.status.start()
         if isinstance(event, MemoryQueryEvent):
             self.console.print(
@@ -121,4 +121,13 @@ class Formatter:
                 )
             )
         if isinstance(event, ToolCallExecutionEvent):
-            pass # WIP
+            self.console.print(
+                Panel(
+                    "...",
+                    title=f"{title_prefix} （资料查阅完毕）",
+                    title_align="left",
+                    style="italic bright_black",
+                )
+            )
+            self.status = self.console.status(f"{title_prefix} 正在组织语言...")
+            self.status.start()

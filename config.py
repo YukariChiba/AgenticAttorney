@@ -66,9 +66,9 @@ teams: TeamsConfig = TeamsConfig(
 )
 
 max_words: int = 300
-max_rounds: int = 8
-
-max_buffer: int = max_rounds * 2
+max_rounds: int = 16
+max_context: int = 8
+summary_context: int = 6
 
 termination_condition = TextMentionTermination("TERMINATE") | MaxMessageTermination(
     max_messages=max_rounds * 2

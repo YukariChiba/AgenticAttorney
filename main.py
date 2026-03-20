@@ -5,10 +5,15 @@ from typing import Any, cast
 
 from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.teams import SelectorGroupChat
+from autogen_contextplus.extension.context import (
+    buffered_summary_chat_completion_context_builder,
+)
 
 from agents import build_all_agents
 from config import (
+    max_context,
     model_client,
+    summary_context,
     termination_condition,
 )
 from format import Formatter
@@ -24,12 +29,12 @@ async def main():
     formatter = Formatter()
 
     formatter.fmtsys("系统初始化...")
-    
+
     mcp_manager = McpToolManager()
     all_tools = await mcp_manager.setup()
-    
+
     A1, N1, Judge, Judge_Final, AllAgents, namemap = build_all_agents(all_tools)
-    
+
     formatter.namemap = namemap
 
     formatter.fmtsys("赛前准备阶段（双方正在后台查阅卷宗...）")
@@ -49,6 +54,14 @@ async def main():
         participants=cast(list[Any], AllAgents),
         model_client=model_client,
         model_client_streaming=True,
+        selector_prompt=load_prompt("selector").content,
+        model_context=buffered_summary_chat_completion_context_builder(
+            max_messages=max_context,
+            summary_end=summary_context,
+            model_client=model_client,
+            system_message="总结之前的辩论内容，体现出发言轮次，要求语气完全中立，不得有任何多余的情感。",
+            summary_format="先前的辩论记录已由书记员总结:\n\n {summary}",
+        ),
         emit_team_events=True,
         termination_condition=termination_condition,
     )
@@ -75,7 +88,7 @@ async def main():
             task=debate_history + [final_task], output_task_messages=False
         ):
             formatter.fmtmsg(event)
-            
+
     await mcp_manager.cleanup()
 
 
