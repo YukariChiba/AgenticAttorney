@@ -1,4 +1,4 @@
-# AgenticDebates
+# AgenticAttorney
 
 基于 AutoGen 的逆转裁判风格辩论生成器。
 
