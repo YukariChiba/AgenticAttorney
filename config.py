@@ -31,7 +31,7 @@ model_config: dict[str, Any] = {
 
 model_client: ChatCompletionClient = ChatCompletionClient.load_component(model_config)
 
-topic_config = "theseus"
+topic_config = "aliens"
 
 topic_md = load_md(f"topics/{topic_config}")
 
@@ -66,9 +66,9 @@ teams: TeamsConfig = TeamsConfig(
 )
 
 max_words: int = 300
-max_rounds: int = 16
-max_context: int = 8
-summary_context: int = 6
+max_rounds: int = 20
+max_context: int = 16
+summary_context: int = 10
 
 termination_condition = TextMentionTermination("TERMINATE") | MaxMessageTermination(
     max_messages=max_rounds * 2

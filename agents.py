@@ -12,12 +12,11 @@ from config import (
 from prompts import load_prompt
 from tools import McpToolAdapter
 
-common_sysmsg = load_prompt("common").content
-
 
 def create_debate_agent(
     agent_name: str, system_msg: str, agent_desc: str, tools: list[McpToolAdapter]
 ) -> AssistantAgent:
+    common_sysmsg = load_prompt("agents/common/debate").content
     return AssistantAgent(
         name=agent_name,
         system_message=f"{common_sysmsg}\n{system_msg}",
@@ -44,9 +43,10 @@ def create_judge_agent(
 def create_witness_agent(
     agent_name: str, system_msg: str, agent_desc: str, tools: list[McpToolAdapter]
 ) -> AssistantAgent:
+    common_sysmsg = load_prompt("agents/common/witness").content
     return AssistantAgent(
         name=agent_name,
-        system_message=system_msg,
+        system_message=f"{common_sysmsg}\n{system_msg}",
         description=agent_desc,
         model_client=model_client,
         model_client_stream=True,
