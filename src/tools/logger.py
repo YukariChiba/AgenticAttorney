@@ -18,7 +18,9 @@ class DebateLogger:
         self.fulllog: list[LogEntry] = []
 
     def log_event(self, event: TextMessage) -> None:
-        source = getattr(event, "source", "Unknown") or "System"
+        source = event.source
+        if event.source == "clerk":
+            return
         metadata = self.metamap.get(source, {})
         name = str(metadata.get("name", source))
         objlol_id = int(metadata.get("objlol", 0))

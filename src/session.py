@@ -40,6 +40,7 @@ class CourtSession:
         self.FirstDefense = self.agent_manager.first_defense
         self.Judge = self.agent_manager.judge
         self.Judge_Final = self.agent_manager.judge_final
+        self.Clerk = self.agent_manager.clerk
         self.AllAgents = self.agent_manager.all_agents
         self.metamap = self.agent_manager.metamap
 
@@ -72,10 +73,18 @@ class CourtSession:
     async def run_debate(self) -> bool:
         self.formatter.print_system("法庭辩论正式开始")
 
+        def clerk_convert(source: str):
+            metadata = self.metamap.get(source, {})
+            display_name = str(metadata.get("name", source))
+            return display_name
+
+        self.Clerk.conv_func = clerk_convert
+
         debate_team = SelectorGroupChat(
             participants=cast(list[Any], self.AllAgents),
             model_client=self.model_client,
             model_client_streaming=True,
+            selector_func=self.Clerk.selector,
             selector_prompt=self.template_engine.load_content("selector"),
             model_context=buffered_summary_chat_completion_context_builder(
                 max_messages=self.config.debate.max_context,

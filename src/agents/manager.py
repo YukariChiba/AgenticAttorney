@@ -1,10 +1,10 @@
 from typing import Any, cast
 
-from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.agents import AssistantAgent, BaseChatAgent
 from autogen_core.models import ChatCompletionClient
 
 from src.core.models import AppConfig
-from src.types.agent import AgentMetadata
+from src.types.agent import AgentMetadata, ClerkAgent
 
 from ..prompts.engine import TemplateEngine
 
@@ -101,13 +101,16 @@ class AgentManager:
         self.config = config
         self.factory = factory
 
-        self.all_agents: list[AssistantAgent] = []
+        self.all_agents: list[BaseChatAgent] = []
         self.metamap: dict[str, AgentMetadata] = {}
 
         first_prosecution: AssistantAgent | None = None
         first_defense: AssistantAgent | None = None
         judge: AssistantAgent | None = None
         judge_final: AssistantAgent | None = None
+        clerk: ClerkAgent = ClerkAgent()
+
+        self.all_agents.append(clerk)
 
         for agent_name in self.config.teams.prosecution:
             agent = self.factory.create_prosecution_agent(agent_name, tools)
@@ -152,6 +155,7 @@ class AgentManager:
         self.first_defense = first_defense
         self.judge = judge
         self.judge_final = judge_final
+        self.clerk = clerk
 
     def _add_agent(
         self, agent_name: str, agent: AssistantAgent, metadata_path: str

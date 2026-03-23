@@ -56,6 +56,8 @@ class ConsoleFormatter:
 
             case SelectSpeakerEvent():
                 source = event.content[0]
+                if source == "clerk":
+                    return
                 display_name, c_start, c_end, char_type = self._get_styling(source)
                 if self.config.teams.jury and source in self.config.teams.jury:
                     return
@@ -75,7 +77,9 @@ class ConsoleFormatter:
                 self.status.start()
 
             case TextMessage():
-                source = getattr(event, "source", "Unknown") or "System"
+                source = event.source
+                if source == "clerk":
+                    return
                 display_name, c_start, c_end, _ = self._get_styling(source)
                 self._stop_status()
                 self.console.print(
