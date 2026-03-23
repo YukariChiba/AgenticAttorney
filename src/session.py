@@ -117,11 +117,11 @@ class CourtSession:
         self.formatter.print_system("宣判环节")
         final_task = TextMessage(
             content=self.template_engine.load_content("final"),
-            source=self.Judge_Final.name,
+            source=self.Judge.name,
         )
         self.formatter.print_event(final_task)
         async for event in self.Judge_Final.run_stream(
-            task=self.debate_history + [final_task], output_task_messages=False
+            task=self.debate_history + [final_task]
         ):
             self.formatter.print_event(event)
             if isinstance(event, TextMessage):
