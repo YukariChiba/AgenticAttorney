@@ -54,21 +54,16 @@ class CourtSession:
         prepare_prompt = self.template_engine.load_content("prepare")
         prepare_message = TextMessage(content=prepare_prompt, source=self.Judge.name)
         self.formatter.print_event(prepare_message)
-        self.logger.log_event(prepare_message)
 
         async for event in self.FirstProsecution.run_stream(
             task=prepare_message, output_task_messages=False
         ):
             self.formatter.print_event(event)
-            if isinstance(event, TextMessage):
-                self.logger.log_event(event)
 
         async for event in self.FirstDefense.run_stream(
             task=prepare_message, output_task_messages=False
         ):
             self.formatter.print_event(event)
-            if isinstance(event, TextMessage):
-                self.logger.log_event(event)
 
     async def run_debate(self) -> bool:
         self.formatter.print_system("法庭辩论正式开始")
