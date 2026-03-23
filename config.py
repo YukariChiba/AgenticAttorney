@@ -31,7 +31,7 @@ model_config: dict[str, Any] = {
 
 model_client: ChatCompletionClient = ChatCompletionClient.load_component(model_config)
 
-topic_config = "aliens"
+topic_config = os.getenv("TOPIC") or "ai-paint"
 
 topic_md = load_md(f"topics/{topic_config}")
 
