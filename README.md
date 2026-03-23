@@ -2,49 +2,162 @@
 
 基于 AutoGen 的逆转裁判风格辩论生成器。
 
-## Usage
+## 项目结构
 
-### 修改 `config.py`：
+### 代码：
 
-- 修改 `model_config` 以使用您自己的模型（默认从 `MODEL_API_NAME` `MODEL_API_URL` `MODEL_API_KEY` 读取环境变量），建议使用带思考的模型
-- 修改 `topic_config` 选择案件
-- 修改 `max_words` 确定每次发言长度
-- 修改 `max_rounds` 确定最大发言轮次
-- 修改 `max_buffer` 确定上下文长度
-- 修改 `teams` 增加、删除、修改辩论队员。
+- `main.py`: 主入口
+- `src/`: 源代码
 
-### 修改 `prompts/` 下的内容：
+### 剧情提示词:
 
-- 修改 `common.md` 编辑所有辩手（除裁判官）的公共提示词
-- 修改 `init.md` 编辑辩论开始时的提示词
-- 修改 `prepare.md` 编辑双方准备阶段的提示词
-- 修改 `final.md` 编辑最终审判的提示词
-- 修改 `selector.md` 编辑选择角色发言的提示词
-- 修改 `agents/*.md` 编辑单个角色的提示词
-- 修改 `topics/*.md` 编辑案件及介绍
+- `prompts/init.md`: 辩论开始
+- `prompts/prepare.md`: 准备阶段
+- `prompts/final.md`: 最终审判
+- `prompts/selector.md`: 角色选择
 
-有以下变量可供使用：
+### 角色提示词:
 
-- `{stance}`：已方观点（默认为正方）
+- `prompts/agents/common`: 角色相关的公共部分
+- `prompts/agents/prosecution`: 检察官
+- `prompts/agents/defense`: 辩护律师
+- `prompts/agents/judge`: 法官
+- `prompts/agents/witness`: 证人
+- `prompts/agents/jury`: 陪审团
+
+### 配置文件:
+
+- `config.json.example`: 配置示例
+- `config.json`: 配置文件（需自行创建）
+
+## 使用
+
+### 安装依赖
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 创建配置文件
+
+复制 `config.json.example` 为 `config.json`，并根据需求修改
+
+### 运行
+
+```bash
+python main.py
+```
+
+## `config.json` 配置说明
+
+#### `debate` 辩论设置
+
+- `max_words`：每次发言长度限制
+- `max_rounds`：最大发言轮次
+- `max_context`：最大上下文消息数
+- `summary_context`：上下文摘要起始点
+
+#### `mcp_servers` MCP 工具配置
+
+预置以下 MCP 服务：
+- `wikipedia-mcp`：维基百科搜索
+- `@jharding_npm/mcp-server-searxng`：通用网络搜索
+- `arxiv-mcp-server`：学术论文搜索
+- `mcp-server-fetch`：网页抓取
+- `@jjfather/civil-code-of-china-mcp`：中国民法典查询
+
+### 添加自定义角色
+
+在 `prompts/agents/<type>/<name>.md` 创建角色文件：
+
+```markdown
+---
+name: 角色中文名
+desc: 角色描述
+objlol: 角色在 objection.lol 中对应的 ID，用于生成剧本，没有可以留空
+---
+
+## 立场
+
+{stance}
+
+## 身份
+
+角色背景介绍...
+
+## 性格与行动准则
+
+1. 角色特征 1
+2. 角色特征 2
+...
+```
+
+可用变量：
+- `{stance}`：已方观点
 - `{affirmative_stance}`：正方观点
 - `{negative_stance}`：反方观点
-- `{affirmative_agents}`：正方辩手列表
-- `{negative_agents}`：反方辩手列表
-- `{witness_agents}`：证人列表
-- `{debate_topic}`：辩论主题
-- `{debate_topic_full}`：案件介绍全文
 - `{max_words}`：每次发言长度
-- `{max_rounds}`：最大发言轮次
-- `{current_date}`：现在的时间
 
-### 修改 `tools.py`:
+### 添加自定义辩题
 
-增加、删除、修改 MCP 服务。
+在 `prompts/topics/<name>.md` 创建辩题文件：
 
-### 增加 `.env`:
+```markdown
+---
+debate_topic: "辩论主题标题"
+affirmative_stance: 正方立场描述
+negative_stance: 反方立场描述
+---
 
-如有必要（如 MCP 或 config 需要）
+案件介绍全文...
+```
 
-## LICENSE
+### 模板变量
+
+以下变量可在提示词模板中使用：
+
+| 变量 | 说明 |
+|------|------|
+| `{stance}` | 已方观点 |
+| `{affirmative_stance}` | 正方观点 |
+| `{negative_stance}` | 反方观点 |
+| `{affirmative_agents}` | 正方辩手列表 |
+| `{negative_agents}` | 反方辩手列表 |
+| `{witness_agents}` | 证人列表 |
+| `{debate_topic}` | 辩论主题 |
+| `{debate_topic_full}` | 案件介绍全文 |
+| `{max_words}` | 每次发言长度 |
+| `{max_rounds}` | 最大发言轮次 |
+| `{current_date}` | 当前时间 |
+
+### 添加自定义 MCP
+
+在 `config.json` 的 `mcp_servers` 中添加新配置，例如：
+
+```json
+{
+  "type": "stdio",
+  "command": "uvx",
+  "args": ["your-mcp-server"],
+  "env": { "ENV_VAR": "value" },
+  "read_timeout_seconds": 20
+}
+```
+
+## 内置辩论主题
+
+- `schrodinger`：「逆转的盲盒」：薛定谔的猫
+- `theseus`：「逆转的船骸」：忒修斯之船
+- `gene-edit`：「逆转的螺旋」：基因编辑婴儿是否合法？
+- `euthanasia`：「逆转的处方笺」：安乐死是否合法？
+- `ai-paint`：「逆转的画笔」：AI 模仿人类画师风格的作品是否合法？
+- `simulation`：「逆转的矩阵」：我们是否生活在模拟的现实之中？
+- `aliens`：「逆转的星空」：外星人存在吗？
+- `chicken-egg`：「逆转的起源」：先有鸡还是先有蛋？
+- `tram`：「逆转的道岔」：电车难题
+
+## 许可证
 
 MIT

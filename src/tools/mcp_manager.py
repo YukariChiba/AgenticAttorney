@@ -1,5 +1,4 @@
 import contextlib
-import os
 from typing import TypeAlias
 
 from autogen_ext.tools.mcp import (
@@ -11,43 +10,27 @@ from autogen_ext.tools.mcp import (
     mcp_server_tools,
 )
 
+from src.types.config import McpServerConfig
+
 McpToolAdapter: TypeAlias = (
     StdioMcpToolAdapter | SseMcpToolAdapter | StreamableHttpMcpToolAdapter
 )
 
-servers = [
-    StdioServerParams(
-        command="uvx",
-        args=["wikipedia-mcp", "--language", "zh-hans"],
-        read_timeout_seconds=20,
-    ),
-    StdioServerParams(
-        command="npx",
-        args=["-y", "@jharding_npm/mcp-server-searxng"],
-        env={"SEARXNG_INSTANCES": os.getenv("SEARXNG_INSTANCES") or ""},
-        read_timeout_seconds=20,
-    ),
-    StdioServerParams(
-        command="uvx", args=["arxiv-mcp-server"], read_timeout_seconds=20
-    ),
-    StdioServerParams(
-        command="uvx", args=["mcp-server-fetch"], read_timeout_seconds=20
-    ),
-    StdioServerParams(
-        command="npx",
-        args=["-y", "@jjfather/civil-code-of-china-mcp"],
-        read_timeout_seconds=20,
-    ),
-]
-
 
 class McpToolManager:
-    def __init__(self):
+    def __init__(self, server_configs: list[McpServerConfig] | None = None) -> None:
+        self.server_configs = server_configs or []
         self.stack = contextlib.AsyncExitStack()
         self.all_tools: list[McpToolAdapter] = []
 
     async def setup(self) -> list[McpToolAdapter]:
-        for params in servers:
+        for server_config in self.server_configs:
+            params = StdioServerParams(
+                command=server_config.command,
+                args=server_config.args,
+                env=server_config.env,
+                read_timeout_seconds=server_config.read_timeout_seconds,
+            )
             session = await self.stack.enter_async_context(
                 create_mcp_server_session(params)
             )
@@ -56,5 +39,5 @@ class McpToolManager:
             self.all_tools.extend(tools)
         return self.all_tools
 
-    async def cleanup(self):
+    async def cleanup(self) -> None:
         await self.stack.aclose()
