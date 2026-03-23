@@ -3,3 +3,4 @@ autogen-ext[openai,mcp]
 rich
 python-frontmatter
 autogen-contextplus
+chevron

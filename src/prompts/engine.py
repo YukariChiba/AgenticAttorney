@@ -1,3 +1,4 @@
+import chevron
 import datetime
 from pathlib import Path
 
@@ -31,21 +32,21 @@ class TemplateEngine:
 
         content = self._load_raw_content(filepath)
 
-        replacements: dict[str, str | int] = {
-            "{stance}": stance or self.config.affirmative_stance,
-            "{affirmative_stance}": self.config.affirmative_stance,
-            "{negative_stance}": self.config.negative_stance,
-            "{debate_topic}": self.config.debate_topic,
-            "{debate_topic_full}": self.config.debate_topic_full,
-            "{max_words}": self.config.debate.max_words,
-            "{max_rounds}": self.config.debate.max_rounds,
-            "{current_date}": datetime.datetime.now(tzlocal()).strftime(
+        data: dict[str, str | int] = {
+            "stance": stance or self.config.affirmative_stance,
+            "affirmative_stance": self.config.affirmative_stance,
+            "negative_stance": self.config.negative_stance,
+            "debate_topic": self.config.debate_topic,
+            "debate_topic_full": self.config.debate_topic_full,
+            "max_words": self.config.debate.max_words,
+            "max_rounds": self.config.debate.max_rounds,
+            "current_date": datetime.datetime.now(tzlocal()).strftime(
                 "%Y 年 %m 月 %d 日，%H:%M"
             ),
         }
 
         if self.config.teams.prosecution:
-            replacements["{affirmative_agents}"] = ", ".join(
+            data["affirmative_agents"] = ", ".join(
                 [
                     f"{self._load_frontmatter('agents/prosecution/' + agent).get('name') or agent} ({agent})"
                     for agent in self.config.teams.prosecution
@@ -53,7 +54,7 @@ class TemplateEngine:
             )
 
         if self.config.teams.defense:
-            replacements["{negative_agents}"] = ", ".join(
+            data["negative_agents"] = ", ".join(
                 [
                     f"{self._load_frontmatter('agents/defense/' + agent).get('name') or agent} ({agent})"
                     for agent in self.config.teams.defense
@@ -61,7 +62,7 @@ class TemplateEngine:
             )
 
         if self.config.teams.witness:
-            replacements["{witness_agents}"] = ", ".join(
+            data["witness_agents"] = ", ".join(
                 [
                     f"{self._load_frontmatter('agents/witness/' + agent).get('name') or agent} ({agent})"
                     for agent in self.config.teams.witness
@@ -69,10 +70,9 @@ class TemplateEngine:
             )
 
         if extra_context:
-            replacements.update(extra_context)
+            data.update(extra_context)
 
-        for key, value in replacements.items():
-            content = content.replace(key, str(value))
+        content = chevron.render(content, data)
 
         return frontmatter.loads(content)
 

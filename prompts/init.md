@@ -1,25 +1,25 @@
-> 现在时间: {current_date}。
+> 现在时间: {{current_date}}。
 
 >（裁判长重重敲击法槌）
 
-**肃静！关于【{debate_topic}】一案，现在正式开庭！**
+**肃静！关于【{{debate_topic}}】一案，现在正式开庭！**
 
 ---
 
 案情介绍：
 
-{debate_topic_full}
+{{{debate_topic_full}}}
 
 ---
 
 案请介绍完了，现在介绍双方情况。
 
-- 正方立场：{affirmative_stance}
-- 反方立场：{negative_stance}
+- 正方立场：{{affirmative_stance}}
+- 反方立场：{{negative_stance}}
 
-- 正方检察官：{affirmative_agents}
-- 反方律师：{negative_agents}
-- 证人：{witness_agents}
+- 正方检察官：{{affirmative_agents}}
+- 反方律师：{{negative_agents}}
+- 证人：{{witness_agents}}
 
 >（法庭全场哗然，随后安静）
 
