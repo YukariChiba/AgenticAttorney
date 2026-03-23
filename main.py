@@ -12,10 +12,8 @@ async def main():
     try:
         session = CourtSession(config, tools)
         await session.start()
-        choice = input("辩论已结束，保存此次记录？[Y/n]: ").strip().lower() or "y"
-        if choice == "y":
-            savefile = session.logger.save()
-            print(f"记录已保存：{savefile}")
+        savefile = session.logger.save()
+        print(f"记录已保存：{savefile}")
     finally:
         await mcp_manager.cleanup()
 

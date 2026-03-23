@@ -31,7 +31,7 @@ class AgentFactory:
         final_system_msg = system_msg
         if common_sysmsg_path:
             common_sysmsg = self.template_engine.load_content(common_sysmsg_path)
-            final_system_msg = f"{common_sysmsg}\n{system_msg}"
+            final_system_msg = f"{system_msg}\n{common_sysmsg}"
 
         kwargs: dict[str, Any] = {
             "name": agent_name,
