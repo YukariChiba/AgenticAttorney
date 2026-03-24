@@ -16,6 +16,10 @@
 - `prompts/final.md`: 最终审判
 - `prompts/selector.md`: 角色选择
 
+### 剧情介绍
+
+- `prompts/topics/*.md`: 剧本介绍
+
 ### 角色提示词:
 
 - `prompts/agents/common`: 角色相关的公共部分
@@ -180,6 +184,7 @@ negative_stance: 反方立场描述
 ## TODO
 
 - 给 agent 增加 memory 和修改自己 memory 的工具
+- 开源 AgenticAttorneyObjectionGenerator，然后与本项目合并。
 
 ## 许可证
 
