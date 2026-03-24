@@ -103,9 +103,6 @@ class AgentManager:
         first_defense: AssistantAgent | None = None
         judge: AssistantAgent | None = None
         judge_final: AssistantAgent | None = None
-        clerk: ClerkAgent = ClerkAgent()
-
-        self.all_agents.append(clerk)
 
         for agent_name in self.config.teams.prosecution:
             agent = self.factory.create_prosecution_agent(agent_name, tools)
@@ -144,7 +141,8 @@ class AgentManager:
         self.first_defense = first_defense
         self.judge = judge
         self.judge_final = judge_final
-        self.clerk = clerk
+        self.clerk = ClerkAgent()
+        self.all_agents.append(self.clerk)
 
     def _add_agent(
         self, agent_name: str, agent: AssistantAgent, metadata_path: str
