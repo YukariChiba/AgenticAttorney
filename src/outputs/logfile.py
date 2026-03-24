@@ -6,12 +6,12 @@ from autogen_agentchat.messages import (
     TextMessage,
 )
 
-from src.agents.manager import AgentMetadata
-from src.core.models import AppConfig
-from src.types.logger import LogEntry
+from src.agents.debate import AgentMetadata
+from src.types.config import AppConfig
+from src.types.logfile import LogEntry
 
 
-class DebateLogger:
+class LogfileFormatter:
     def __init__(self, config: AppConfig, metamap: dict[str, AgentMetadata]) -> None:
         self.config = config
         self.metamap = metamap
@@ -43,8 +43,8 @@ class DebateLogger:
             return "Defense"
         elif source in self.config.teams.witness:
             return "Witness"
-        elif source in self.config.teams.judge:
-            return "Judge"
-        elif source in self.config.teams.judge_final:
+        elif (
+            source == self.config.teams.judge or source == self.config.teams.judge_final
+        ):
             return "Judge"
         return "Unknown"

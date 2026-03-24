@@ -1,11 +1,16 @@
 import asyncio
+import logging
 
-from src.session import CourtSession
-from src.core.models import AppConfig
+from src.core.court import CourtSession
 from src.tools.mcp_manager import McpToolManager
+from src.types.config import AppConfig
 
 
 async def main():
+    # suppress logging
+    logging.getLogger("autogen_core").setLevel(logging.WARNING)
+    logging.getLogger("autogen_contextplus").setLevel(logging.WARNING)
+
     config = AppConfig.load("config.json")
     mcp_manager = McpToolManager(config.mcp_servers)
     tools = await mcp_manager.setup()

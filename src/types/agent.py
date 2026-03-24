@@ -18,13 +18,17 @@ class ClerkAgent(BaseChatAgent):
             "clerk",
             description="书记员，永远不会出场，永远不要选我发言",
         )
-        if func:
-            self.conv_func = func
-        else:
-            self.conv_func = lambda s: s
+        self.conv_func = func or (lambda s: s)
+        self._forced_next_speaker: str | None = None
 
-    @staticmethod
-    def selector(messages):
+    def set_next_speaker(self, name: str | None) -> None:
+        self._forced_next_speaker = name
+
+    def selector(self, messages):
+        if self._forced_next_speaker is not None:
+            tmp = self._forced_next_speaker
+            self._forced_next_speaker = None
+            return tmp
         if messages[-1].source != "clerk":
             return "clerk"
         return None

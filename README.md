@@ -30,7 +30,7 @@
 
 ### 配置文件:
 
-- `config.json.example`: 配置示例
+- `config.example.json`: 配置示例
 - `config.json`: 配置文件（需自行创建）
 
 ## 机制说明
@@ -38,6 +38,10 @@
 ### 辩论环节的身份管理
 
 辩论环节中，agent 很容易忘记自己和上一个发言的人的身份。为此引入了 Clerk Agent (书记员)，其作用是让 agent 认清上一个发言人的身份，未来可能还有其他用处。
+
+### 5 轮调用和思考
+
+每轮发言中，Agent 最多可以进行 5 轮工具调用（包括搜索、查询、抓取等操作），以便更好地收集证据。工具调用采用并行模式，允许 Agent 同时发起多个工具请求以提高效率。
 
 ### 起始准备环节
 
@@ -183,7 +187,6 @@ negative_stance: 反方立场描述
 
 ## TODO
 
-- 给 agent 增加 memory 和修改自己 memory 的工具
 - 开源 AgenticAttorneyObjectionGenerator，然后与本项目合并。
 
 ## 许可证
