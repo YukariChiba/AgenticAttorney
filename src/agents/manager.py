@@ -85,11 +85,6 @@ class AgentFactory:
             agent_name, md.content, desc, tools, "agents/common/witness"
         )
 
-    def create_jury_agent(self, agent_name: str) -> AssistantAgent:
-        md = self.template_engine.load_and_render(f"agents/jury/{agent_name}")
-        desc = str(md.metadata.get("desc", ""))
-        return self._create_base_agent(agent_name, md.content, desc)
-
 
 class AgentManager:
     def __init__(
@@ -139,12 +134,6 @@ class AgentManager:
         for agent_name in self.config.teams.witness:
             agent = self.factory.create_witness_agent(agent_name, tools)
             self._add_agent(agent_name, agent, f"agents/witness/{agent_name}")
-
-        if self.config.teams.jury:
-            jury = self.factory.create_jury_agent(self.config.teams.jury)
-            self._add_agent(
-                self.config.teams.jury, jury, f"agents/jury/{self.config.teams.jury}"
-            )
 
         assert first_prosecution is not None
         assert first_defense is not None

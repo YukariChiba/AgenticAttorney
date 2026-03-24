@@ -43,8 +43,6 @@ class DebateLogger:
             return "Defense"
         elif source in self.config.teams.witness:
             return "Witness"
-        elif self.config.teams.jury and source in self.config.teams.jury:
-            return "Jury"
         elif source in self.config.teams.judge:
             return "Judge"
         elif source in self.config.teams.judge_final:

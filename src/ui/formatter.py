@@ -35,8 +35,6 @@ class ConsoleFormatter:
             return display_name, "[bold red]", "[/bold red]", "Defense"
         elif source in self.config.teams.witness:
             return display_name, "[bold purple]", "[/bold purple]", "Witness"
-        elif self.config.teams.jury and source in self.config.teams.jury:
-            return display_name, "[bold yellow]", "[/bold yellow]", "Jury"
         elif source in self.config.teams.judge:
             return display_name, "[bold yellow]", "[/bold yellow]", "Judge"
         elif source in self.config.teams.judge_final:
@@ -59,8 +57,6 @@ class ConsoleFormatter:
                 if source == "clerk":
                     return
                 display_name, c_start, c_end, char_type = self._get_styling(source)
-                if self.config.teams.jury and source in self.config.teams.jury:
-                    return
                 self.console.print(
                     Panel(
                         "申请发言！",

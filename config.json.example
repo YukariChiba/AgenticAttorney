@@ -21,8 +21,7 @@
     "defense": ["Phoenix_Wright", "Apollo_Justice", "Mia_Fey"],
     "judge": "Judge",
     "judge_final": "Judge_Final",
-    "witness": ["Dick_Gumshoe", "Ema_Skye", "Larry_Butz", "Lotta_Hart"],
-    "jury": "Jury"
+    "witness": ["Dick_Gumshoe", "Ema_Skye", "Larry_Butz", "Lotta_Hart"]
   },
   "debate": {
     "max_words": 300,

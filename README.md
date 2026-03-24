@@ -23,7 +23,6 @@
 - `prompts/agents/defense`: 辩护律师
 - `prompts/agents/judge`: 法官
 - `prompts/agents/witness`: 证人
-- `prompts/agents/jury`: 陪审团
 
 ### 配置文件:
 

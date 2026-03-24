@@ -15,7 +15,6 @@ class TeamsConfig(BaseModel):
     judge: str = Field(alias="judge")
     judge_final: str = Field(alias="judge_final")
     witness: list[str] = Field(alias="witness")
-    jury: str | None = Field(alias="jury", default=None)
 
 
 class DebateSettingsConfig(BaseModel):
