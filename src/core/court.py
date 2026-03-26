@@ -39,11 +39,8 @@ class CourtSession:
             tools,
         )
 
-        self.metamap = self.agent_manager.metamap
-
-        self.logger = LogfileFormatter(self.config, self.metamap)
-        self.formatter = ConsoleFormatter(self.config, self.metamap)
-        self.debate_history: list[TextMessage] = []
+        self.logger = LogfileFormatter(self.config, self.agent_manager.metamap)
+        self.formatter = ConsoleFormatter(self.config, self.agent_manager.metamap)
         self.debate_team: SelectorGroupChat
 
     async def run_preparation(self) -> None:
@@ -86,7 +83,7 @@ class CourtSession:
         self.formatter.print_system("法庭辩论正式开始")
 
         self.agent_manager.clerk.conv_func = lambda s: str(
-            self.metamap.get(s, {}).get("name", s)
+            self.agent_manager.metamap.get(s, {}).get("name", s)
         )
 
         self.debate_team = SelectorGroupChat(
@@ -112,12 +109,10 @@ class CourtSession:
             content=self.template_engine.load_and_render("init").content,
             source=self.agent_manager.judge.name,
         )
-        self.debate_history = [init_msg]
 
         async for event in self.debate_team.run_stream(task=init_msg):
             self.formatter.print_event(event)
             if isinstance(event, TextMessage):
-                self.debate_history.append(event)
                 self.logger.log_event(event)
                 if "TERMINATE" in event.content:
                     terminated_by_judge = True
@@ -135,7 +130,6 @@ class CourtSession:
         async for event in self.debate_team.run_stream(task=final_task):
             self.formatter.print_event(event)
             if isinstance(event, TextMessage):
-                self.debate_history.append(event)
                 self.logger.log_event(event)
 
     async def start(self) -> None:
