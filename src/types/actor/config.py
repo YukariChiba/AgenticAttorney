@@ -30,3 +30,4 @@ class ActorConfig(BaseModel):
     summary_start: int = 4
     summary_end: int = 4
     max_tool_iterations: int = 5
+    prepare: bool = True

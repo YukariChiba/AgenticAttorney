@@ -21,6 +21,7 @@
     "max_context": 12,
     "summary_start": 4,
     "summary_end": 4,
+    "prepare": true,
     "max_tool_iterations": 5,
     "topic": "ai-paint",
     "teams": {

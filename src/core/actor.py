@@ -133,7 +133,8 @@ class CourtSession:
                 self.logger.log_event(event)
 
     async def start(self) -> None:
-        await self.run_preparation()
+        if self.config.actor.prepare:
+            await self.run_preparation()
         terminated_by_judge = await self.run_debate()
         if not terminated_by_judge:
             await self.run_verdict()
