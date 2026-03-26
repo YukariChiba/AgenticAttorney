@@ -14,12 +14,12 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.status import Status
 
-from src.types.agent import AgentMetadata
+from src.types.actor.agent import ActorMetadata
 from src.types.config import AppConfig
 
 
 class ConsoleFormatter:
-    def __init__(self, config: AppConfig, metamap: dict[str, AgentMetadata]) -> None:
+    def __init__(self, config: AppConfig, metamap: dict[str, ActorMetadata]) -> None:
         self.config = config
         self.metamap = metamap
         self.console = Console()
@@ -28,14 +28,15 @@ class ConsoleFormatter:
     def _get_styling(self, source: str) -> tuple[str, str, str, str]:
         metadata = self.metamap.get(source, {})
         display_name = str(metadata.get("name", source))
-        if source in self.config.teams.prosecution:
+        if source in self.config.actor.teams.prosecution:
             return display_name, "[bold blue]", "[/bold blue]", "Prosecution"
-        elif source in self.config.teams.defense:
+        elif source in self.config.actor.teams.defense:
             return display_name, "[bold red]", "[/bold red]", "Defense"
-        elif source in self.config.teams.witness:
+        elif source in self.config.actor.teams.witness:
             return display_name, "[bold purple]", "[/bold purple]", "Witness"
         elif (
-            source == self.config.teams.judge or source == self.config.teams.judge_final
+            source == self.config.actor.teams.judge
+            or source == self.config.actor.teams.judge_final
         ):
             return display_name, "[bold yellow]", "[/bold yellow]", "Judge"
         return display_name, "[bold yellow]", "[/bold yellow]", "Unknown"

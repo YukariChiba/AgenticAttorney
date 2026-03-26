@@ -1,67 +1,92 @@
 {
+  "actor": {
     "model": {
-        "provider": "OpenAIChatCompletionClient",
-        "model": "{MODEL_API_NAME}",
-        "base_url": "{MODEL_API_URL}",
-        "api_key": "{MODEL_API_KEY}",
-        "timeout": 1200,
-        "temperature": 0.8,
-        "parallel_tool_calls": true,
-        "model_info": {
-            "vision": false,
-            "function_calling": true,
-            "json_output": true,
-            "family": "unknown",
-            "structured_output": true
-        }
+      "provider": "OpenAIChatCompletionClient",
+      "model": "{MODEL}",
+      "base_url": "{API_URL}",
+      "api_key": "{API_KEY}",
+      "timeout": 1200,
+      "temperature": 0.8,
+      "parallel_tool_calls": true,
+      "model_info": {
+        "vision": false,
+        "function_calling": true,
+        "json_output": true,
+        "family": "unknown",
+        "structured_output": true
+      }
     },
-    "topic": "{TOPIC}",
+    "max_words": 300,
+    "max_rounds": 16,
+    "max_context": 12,
+    "summary_start": 4,
+    "summary_end": 4,
+    "max_tool_iterations": 5,
+    "topic": "ai-paint",
     "teams": {
-        "prosecution": ["Manfred_von_Karma", "Miles_Edgeworth", "Godot"],
-        "defense": ["Phoenix_Wright", "Apollo_Justice", "Mia_Fey"],
-        "judge": "Judge",
-        "judge_final": "Judge_Final",
-        "witness": ["Dick_Gumshoe", "Ema_Skye", "Larry_Butz", "Lotta_Hart"]
-    },
-    "debate": {
-        "max_words": 300,
-        "max_rounds": 16,
-        "max_context": 12,
-        "summary_start": 4,
-        "summary_end": 4,
-        "max_tool_iterations": 5
+      "prosecution": ["Manfred_von_Karma", "Miles_Edgeworth"],
+      "defense": ["Phoenix_Wright", "Apollo_Justice"],
+      "judge": "Judge",
+      "judge_final": "Judge_Final",
+      "witness": ["Dick_Gumshoe", "Ema_Skye", "Larry_Butz", "Lotta_Hart"]
     },
     "mcp_servers": [
-        {
-            "type": "stdio",
-            "command": "uvx",
-            "args": ["wikipedia-mcp", "--language", "zh-hans"],
-            "read_timeout_seconds": 20
+      {
+        "type": "stdio",
+        "command": "uvx",
+        "args": ["wikipedia-mcp", "--language", "zh-hans"],
+        "read_timeout_seconds": 20
+      },
+      {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@jharding_npm/mcp-server-searxng"],
+        "env": {
+          "SEARXNG_INSTANCES": "{SEARXNG_INSTANCES}"
         },
-        {
-            "type": "stdio",
-            "command": "npx",
-            "args": ["-y", "@jharding_npm/mcp-server-searxng"],
-            "env": { "SEARXNG_INSTANCES": "{SEARXNG_INSTANCES}" },
-            "read_timeout_seconds": 20
-        },
-        {
-            "type": "stdio",
-            "command": "uvx",
-            "args": ["arxiv-mcp-server"],
-            "read_timeout_seconds": 20
-        },
-        {
-            "type": "stdio",
-            "command": "uvx",
-            "args": ["mcp-server-fetch"],
-            "read_timeout_seconds": 20
-        },
-        {
-            "type": "stdio",
-            "command": "npx",
-            "args": ["-y", "@jjfather/civil-code-of-china-mcp"],
-            "read_timeout_seconds": 20
-        }
+        "read_timeout_seconds": 20
+      },
+      {
+        "type": "stdio",
+        "command": "uvx",
+        "args": ["arxiv-mcp-server"],
+        "read_timeout_seconds": 20
+      },
+      {
+        "type": "stdio",
+        "command": "uvx",
+        "args": ["mcp-server-fetch"],
+        "read_timeout_seconds": 20
+      },
+      {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@jjfather/civil-code-of-china-mcp"],
+        "read_timeout_seconds": 20
+      }
     ]
+  },
+
+  "director": {
+    "model": {
+      "provider": "OpenAIChatCompletionClient",
+      "model": "{MODEL}",
+      "base_url": "{API_URL}",
+      "api_key": "{API_KEY}",
+      "timeout": 1200,
+      "temperature": 0.9,
+      "max_tokens": 50000,
+      "parallel_tool_calls": true,
+      "model_info": {
+        "vision": false,
+        "function_calling": true,
+        "json_output": true,
+        "family": "unknown",
+        "structured_output": true
+      }
+    },
+    "buffer_size": 3,
+    "max_retries": 3,
+    "cache_duration": 86400
+  }
 }

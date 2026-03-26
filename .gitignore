@@ -3,3 +3,4 @@ venv
 logs/
 .ruff_cache
 config.json
+cache/

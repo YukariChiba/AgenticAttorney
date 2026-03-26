@@ -1,10 +1,13 @@
 from typing import Any, Literal, cast
 
 from autogen_agentchat.agents import AssistantAgent
+from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 
+from src.core.config_loader import load_topic_md
 from src.prompts.engine import TemplateEngine
 from src.types.config import AppConfig
+from src.types.director.frames import FrameList
 
 
 class AgentFactory:
@@ -44,7 +47,7 @@ class AgentFactory:
         if tools:
             kwargs["tools"] = cast(list[Any], tools)
             kwargs["reflect_on_tool_use"] = False
-            kwargs["max_tool_iterations"] = self.config.debate.max_tool_iterations
+            kwargs["max_tool_iterations"] = self.config.actor.max_tool_iterations
 
         return AssistantAgent(**kwargs)
 
@@ -54,11 +57,10 @@ class AgentFactory:
         side: Literal["prosecution", "defense"],
         tools: list[Any] | None = None,
     ) -> AssistantAgent:
-        stance = (
-            self.config.affirmative_stance
-            if side == "prosecution"
-            else self.config.negative_stance
-        )
+        topic_md = load_topic_md(self.config.actor.topic)
+        affirmative_stance = str(topic_md.metadata.get("affirmative_stance", ""))
+        negative_stance = str(topic_md.metadata.get("negative_stance", ""))
+        stance = affirmative_stance if side == "prosecution" else negative_stance
         md = self.template_engine.load_and_render(
             f"agents/{side}/{agent_name}", {"stance": stance}
         )
@@ -79,4 +81,18 @@ class AgentFactory:
         desc = str(md.metadata.get("desc", ""))
         return self._create_base_agent(
             agent_name, md.content, desc, tools, "agents/common/witness"
+        )
+
+    def create_objection_agent(self, system_msg: str) -> AssistantAgent:
+        return AssistantAgent(
+            name="ObjectionDirector",
+            system_message=system_msg,
+            description="法庭剧本导演，将辩论日志转换为逆转裁判风格的剧本",
+            model_client=self.model_client,
+            model_client_stream=True,
+            reflect_on_tool_use=True,
+            output_content_type=FrameList,
+            model_context=BufferedChatCompletionContext(
+                buffer_size=self.config.director.buffer_size
+            ),
         )

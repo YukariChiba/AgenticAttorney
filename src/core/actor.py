@@ -10,11 +10,11 @@ from autogen_contextplus.extension.context import (
 )
 from autogen_core.models import ChatCompletionClient
 
-from src.prompts.debate import DebateTemplateEngine
+from src.prompts.actor import ActorTemplateEngine
 from src.tools.mcp_manager import McpToolAdapter
 from src.types.config import AppConfig
 
-from ..agents.debate import AgentFactory, DebateAgentManager
+from ..agents.actor import ActorAgentManager, AgentFactory
 from ..outputs.console import ConsoleFormatter
 from ..outputs.logfile import LogfileFormatter
 from ..prompts.engine import TemplateEngine
@@ -26,14 +26,14 @@ class CourtSession:
     ) -> None:
         self.config = config
         self.model_client: ChatCompletionClient = ChatCompletionClient.load_component(
-            self.config.model.to_component_config()
+            self.config.actor.model.to_component_config()
         )
-        self.template_engine: TemplateEngine = DebateTemplateEngine(self.config)
+        self.template_engine: TemplateEngine = ActorTemplateEngine(self.config)
         self.termination_condition: TerminationCondition = TextMentionTermination(
             "TERMINATE"
-        ) | MaxMessageTermination(max_messages=self.config.debate.max_rounds * 2)
+        ) | MaxMessageTermination(max_messages=self.config.actor.max_rounds * 2)
 
-        self.agent_manager = DebateAgentManager(
+        self.agent_manager = ActorAgentManager(
             self.config,
             AgentFactory(self.config, self.model_client, self.template_engine),
             tools,
@@ -93,11 +93,11 @@ class CourtSession:
             selector_func=self.agent_manager.clerk.selector,
             selector_prompt=self.template_engine.load_and_render("selector").content,
             model_context=buffered_summary_chat_completion_context_builder(
-                max_messages=self.config.debate.max_context,
+                max_messages=self.config.actor.max_context,
                 model_client=self.model_client,
                 system_message=self.template_engine.load_and_render("summary").content,
-                summary_start=self.config.debate.summary_start,
-                summary_end=-self.config.debate.summary_end,
+                summary_start=self.config.actor.summary_start,
+                summary_end=-self.config.actor.summary_end,
                 summary_format="先前的辩论记录已由书记员总结:\n\n {summary}",
             ),
             emit_team_events=True,

@@ -3,11 +3,11 @@ from typing import Any, cast
 from autogen_agentchat.agents import AssistantAgent, BaseChatAgent
 
 from src.agents.factory import AgentFactory
-from src.types.agent import AgentMetadata, ClerkAgent
+from src.types.actor.agent import ActorMetadata, ClerkAgent
 from src.types.config import AppConfig
 
 
-class DebateAgentManager:
+class ActorAgentManager:
     def __init__(
         self,
         config: AppConfig,
@@ -20,36 +20,40 @@ class DebateAgentManager:
         self.all_agents: list[BaseChatAgent] = []
         self.prosecution_agents: list[AssistantAgent] = []
         self.defense_agents: list[AssistantAgent] = []
-        self.metamap: dict[str, AgentMetadata] = {}
+        self.metamap: dict[str, ActorMetadata] = {}
 
         judge: AssistantAgent | None = None
         judge_final: AssistantAgent | None = None
 
-        for agent_name in self.config.teams.prosecution:
+        for agent_name in self.config.actor.teams.prosecution:
             agent = self.factory.create_debate_agent(
                 agent_name, "prosecution", tools or []
             )
             self._add_agent(agent_name, agent, f"agents/prosecution/{agent_name}")
             self.prosecution_agents.append(agent)
 
-        for agent_name in self.config.teams.defense:
+        for agent_name in self.config.actor.teams.defense:
             agent = self.factory.create_debate_agent(agent_name, "defense", tools or [])
             self._add_agent(agent_name, agent, f"agents/defense/{agent_name}")
             self.prosecution_agents.append(agent)
 
-        judge = self.factory.create_judge_agent(self.config.teams.judge)
+        judge = self.factory.create_judge_agent(self.config.actor.teams.judge)
         self._add_agent(
-            self.config.teams.judge, judge, f"agents/judge/{self.config.teams.judge}"
+            self.config.actor.teams.judge,
+            judge,
+            f"agents/judge/{self.config.actor.teams.judge}",
         )
 
-        judge_final = self.factory.create_judge_agent(self.config.teams.judge_final)
+        judge_final = self.factory.create_judge_agent(
+            self.config.actor.teams.judge_final
+        )
         self._add_agent(
-            self.config.teams.judge_final,
+            self.config.actor.teams.judge_final,
             judge_final,
-            f"agents/judge/{self.config.teams.judge_final}",
+            f"agents/judge/{self.config.actor.teams.judge_final}",
         )
 
-        for agent_name in self.config.teams.witness:
+        for agent_name in self.config.actor.teams.witness:
             agent = self.factory.create_witness_agent(agent_name, tools)
             self._add_agent(agent_name, agent, f"agents/witness/{agent_name}")
 
@@ -66,7 +70,7 @@ class DebateAgentManager:
     ) -> None:
         self.all_agents.append(agent)
         metadata = self.factory.template_engine.load_and_render(metadata_path).metadata
-        self.metamap[agent_name] = AgentMetadata(
+        self.metamap[agent_name] = ActorMetadata(
             name=str(metadata.get("name", "")),
             desc=str(metadata.get("desc", "")),
             objlol=cast(int, metadata.get("objlol", 0)),

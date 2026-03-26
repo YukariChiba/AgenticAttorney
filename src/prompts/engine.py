@@ -1,15 +1,14 @@
-from pathlib import Path
-
 import chevron
 import frontmatter
 
+from src.constants import PROMPTS_DIR
 from src.types.config import AppConfig
 
 
 class TemplateEngine:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
-        self.prompts_dir = Path("prompts")
+        self.prompts_dir = PROMPTS_DIR
 
     def _load_raw_content(self, filepath: str) -> str:
         full_path = self.prompts_dir / f"{filepath}.md"

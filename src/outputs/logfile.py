@@ -1,18 +1,18 @@
 import json
-import os
 from uuid import uuid4
 
 from autogen_agentchat.messages import (
     TextMessage,
 )
 
-from src.agents.debate import AgentMetadata
+from src.constants import LOGS_DIR
+from src.types.actor.agent import ActorMetadata
 from src.types.config import AppConfig
 from src.types.logfile import LogEntry
 
 
 class LogfileFormatter:
-    def __init__(self, config: AppConfig, metamap: dict[str, AgentMetadata]) -> None:
+    def __init__(self, config: AppConfig, metamap: dict[str, ActorMetadata]) -> None:
         self.config = config
         self.metamap = metamap
         self.fulllog: list[LogEntry] = []
@@ -30,21 +30,22 @@ class LogfileFormatter:
         )
 
     def save(self) -> str:
-        os.makedirs("logs", exist_ok=True)
-        savefile = f"logs/{uuid4()}.json"
+        LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        savefile = LOGS_DIR / f"{uuid4()}.json"
         with open(savefile, "w", encoding="utf-8") as f:
             json.dump(self.fulllog, f, indent=4, ensure_ascii=False)
-        return savefile
+        return str(savefile)
 
     def _get_character_type(self, source: str) -> str:
-        if source in self.config.teams.prosecution:
+        if source in self.config.actor.teams.prosecution:
             return "Prosecution"
-        elif source in self.config.teams.defense:
+        elif source in self.config.actor.teams.defense:
             return "Defense"
-        elif source in self.config.teams.witness:
+        elif source in self.config.actor.teams.witness:
             return "Witness"
         elif (
-            source == self.config.teams.judge or source == self.config.teams.judge_final
+            source == self.config.actor.teams.judge
+            or source == self.config.actor.teams.judge_final
         ):
             return "Judge"
         return "Unknown"

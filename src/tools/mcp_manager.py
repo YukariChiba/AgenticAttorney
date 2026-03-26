@@ -10,7 +10,7 @@ from autogen_ext.tools.mcp import (
     mcp_server_tools,
 )
 
-from src.types.config import McpServerConfig
+from src.types.actor.config import McpServerConfig
 
 McpToolAdapter: TypeAlias = (
     StdioMcpToolAdapter | SseMcpToolAdapter | StreamableHttpMcpToolAdapter

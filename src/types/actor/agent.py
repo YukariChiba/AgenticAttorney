@@ -6,7 +6,7 @@ from autogen_agentchat.messages import BaseChatMessage, ChatMessage, TextMessage
 from autogen_core import CancellationToken
 
 
-class AgentMetadata(TypedDict):
+class ActorMetadata(TypedDict):
     name: str
     desc: str
     objlol: int
