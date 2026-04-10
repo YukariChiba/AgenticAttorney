@@ -33,7 +33,7 @@ class LogfileFormatter:
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
         savefile = LOGS_DIR / f"{uuid4()}.json"
         with open(savefile, "w", encoding="utf-8") as f:
-            json.dump(self.fulllog, f, indent=4, ensure_ascii=False)
+            json.dump([entry.model_dump() for entry in self.fulllog], f, indent=4, ensure_ascii=False)
         return str(savefile)
 
     def _get_character_type(self, source: str) -> str:
