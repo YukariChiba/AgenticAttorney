@@ -6,6 +6,7 @@ from autogen_core.models import ChatCompletionClient
 
 from src.core.config_loader import load_topic_md
 from src.prompts.engine import TemplateEngine
+from src.tools.memory import AgentMemory
 from src.types.config import AppConfig
 from src.types.director.frames import FrameList
 
@@ -65,8 +66,13 @@ class AgentFactory:
             f"agents/{side}/{agent_name}", {"stance": stance}
         )
         desc = str(md.metadata.get("desc", ""))
+
+        memory = AgentMemory()
+        agent_tools = list(tools) if tools else []
+        agent_tools.extend(memory.tools)
+
         return self._create_base_agent(
-            agent_name, md.content, desc, tools, "agents/common/debate"
+            agent_name, md.content, desc, agent_tools, "agents/common/debate"
         )
 
     def create_judge_agent(self, agent_name: str) -> AssistantAgent:
