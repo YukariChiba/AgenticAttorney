@@ -5,6 +5,7 @@ from pathlib import Path
 from autogen_agentchat.messages import StructuredMessage, TextMessage
 from autogen_core.models import ChatCompletionClient
 from openai import LengthFinishReasonError
+from pydantic import ValidationError
 
 from src.agents.factory import AgentFactory
 from src.constants import TAGS_JSON
@@ -97,6 +98,13 @@ class LogConverter:
                 logging.warning(f"Token limit exceeded: {e}")
                 validation_errors.append(
                     "Your previous output for this log is too long, please reduce it."
+                )
+                frame_list = FrameList([])
+
+            except ValidationError as e:
+                logging.warning(f"Failed to validate JSON: {e}")
+                validation_errors.append(
+                    "Your output is not correct, please fix it."
                 )
                 frame_list = FrameList([])
 
