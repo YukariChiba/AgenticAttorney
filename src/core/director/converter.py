@@ -129,7 +129,14 @@ class LogConverter:
                     f"Validation errors found (attempt {retry_count + 1}/{max_retries}): {validation_errors}"
                 )
                 errors_str = "\n".join(validation_errors)
-                user_msg += f"The previous response had validation errors:\n{errors_str}\n\nPlease fix these errors and regenerate the entire response."
+                user_msg += (
+                    f"\n\n[NOTICE]: You previously generated a response that resulted in the following validation errors:\n"
+                    f"{errors_str}\n\n"
+                    f"Your incorrect response has been removed from the context. "
+                    f"You must ONLY generate new frames for the current log entry. "
+                    f"DO NOT rewrite provided previous frames in response. "
+                    f"Those are historical context from past successful events, NOT your previous incorrect output. "
+                )
         else:
             logging.warning(
                 f"Failed validation after {max_retries} attempts, using original fallback logic"
@@ -171,6 +178,8 @@ class LogConverter:
         total_logs = len(logs)
         for i, log_entry in enumerate(logs, 1):
             logging.info(f"Processing log entry {i}/{total_logs}")
+
+            await self.agent.model_context.clear()
 
             next_log_entry = logs[i] if i < total_logs else None
 
