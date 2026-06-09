@@ -8,3 +8,4 @@ class DirectorConfig(BaseModel):
     buffer_size: int = 3
     max_retries: int = 3
     cache_duration: int = 86400
+    batch_size: int = 6

@@ -46,37 +46,47 @@ class PromptBuilder:
     def build_user_prompt(
         self,
         user_template: str,
-        log_entry: LogEntry,
+        log_entries: list[LogEntry],
         next_log_entry: LogEntry | None,
         previous_frames: list,
         assets_manager: AssetsManager,
     ) -> str:
-        speaker_cn = log_entry.name
-        char_id = log_entry.objlol_id
-        content = log_entry.content
-
-        character = next((c for c in self.active_characters if c.id == char_id), None)
-        char_info = (
-            character if character else assets_manager.get_character_info(char_id)
-        )
-        speaker_en = char_info.name if char_info else "unknown"
-        side = char_info.side if char_info else "unknown"
-
+        current_logs_str = self._format_current_logs(log_entries, assets_manager)
         recent_frames_str = self._format_recent_frames(previous_frames)
 
-        next_log_str = self._format_next_log(next_log_entry)
+        next_log_str = self._format_next_log(next_log_entry, assets_manager)
 
         return chevron.render(
             user_template,
             {
-                "speaker_cn": speaker_cn,
-                "speaker_en": speaker_en,
-                "side": side,
-                "content": content,
+                "current_logs": current_logs_str,
                 "recent_frames": recent_frames_str,
                 "next_log": next_log_str,
             },
         )
+
+    def _format_current_logs(
+        self, log_entries: list[LogEntry], assets_manager: AssetsManager
+    ) -> str:
+        formatted_logs = []
+        for entry in log_entries:
+            speaker_cn = entry.name
+            char_id = entry.objlol_id
+            content = entry.content
+
+            character = next(
+                (c for c in self.active_characters if c.id == char_id), None
+            )
+            char_info = (
+                character if character else assets_manager.get_character_info(char_id)
+            )
+            speaker_en = char_info.name if char_info else "unknown"
+            side = char_info.side if char_info else "unknown"
+
+            formatted_logs.append(
+                f"主讲人: {speaker_cn} ({speaker_en}) (阵营： {side})\n核心台词:\n```\n{content}\n```"
+            )
+        return "\n\n".join(formatted_logs)
 
     def _format_recent_frames(self, previous_frames: list) -> str:
         if not previous_frames:
@@ -90,15 +100,16 @@ class PromptBuilder:
 
         return "\n".join(frames_text)
 
-    def _format_next_log(self, next_log_entry: LogEntry | None) -> str:
+    def _format_next_log(self, next_log_entry: LogEntry | None, assets_manager: AssetsManager) -> str:
         if next_log_entry is None:
-            return "（无后续台词，这是最后一句）"
+            return "（无后续台词，这是最后一段）"
 
         speaker_cn = next_log_entry.name
         char_id = next_log_entry.objlol_id
         content = next_log_entry.content
 
         character = next((c for c in self.active_characters if c.id == char_id), None)
-        speaker_en = character.name if character else "unknown"
+        char_info = character if character else assets_manager.get_character_info(char_id)
+        speaker_en = char_info.name if char_info else "unknown"
 
         return f'{speaker_cn} ({speaker_en}):\n  "{content}"'

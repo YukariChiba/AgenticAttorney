@@ -62,9 +62,9 @@ class LogConverter:
 
         return active_characters
 
-    async def _process_log_entry(
+    async def _process_log_batch(
         self,
-        log_entry: LogEntry,
+        log_entries: list[LogEntry],
         next_log_entry: LogEntry | None,
         previous_frames: list[Frame],
         frame_id: int,
@@ -72,7 +72,7 @@ class LogConverter:
         template_engine: TemplateEngine = TemplateEngine(self.config)
         user_template = template_engine._load_raw_content("director/user")
         user_msg = self.prompt_builder.build_user_prompt(
-            user_template, log_entry, next_log_entry, previous_frames, self.assets
+            user_template, log_entries, next_log_entry, previous_frames, self.assets
         )
 
         frame_list: FrameList | None = None
@@ -97,19 +97,17 @@ class LogConverter:
             except LengthFinishReasonError as e:
                 logging.warning(f"Token limit exceeded: {e}")
                 validation_errors.append(
-                    "Your previous output for this log is too long, please reduce it."
+                    "Your previous output for these logs is too long, please reduce it."
                 )
                 frame_list = FrameList([])
 
             except ValidationError as e:
                 logging.warning(f"Failed to validate JSON: {e}")
-                validation_errors.append(
-                    "Your output is not correct, please fix it."
-                )
+                validation_errors.append("Your output is not correct, please fix it.")
                 frame_list = FrameList([])
 
             except Exception as e:
-                logging.error(f"Error processing log entry: {e}", exc_info=True)
+                logging.error(f"Error processing log batch: {e}", exc_info=True)
                 return [], []
 
             if frame_list is None:
@@ -133,7 +131,7 @@ class LogConverter:
                     f"\n\n[NOTICE]: You previously generated a response that resulted in the following validation errors:\n"
                     f"{errors_str}\n\n"
                     f"Your incorrect response has been removed from the context. "
-                    f"You must ONLY generate new frames for the current log entry. "
+                    f"You must ONLY generate new frames for the current log entries. "
                     f"DO NOT rewrite provided previous frames in response. "
                     f"Those are historical context from past successful events, NOT your previous incorrect output. "
                 )
@@ -174,14 +172,20 @@ class LogConverter:
         all_frames = []
         previous_frames = []
         frame_id = 1
+        batch_size = self.config.director.batch_size
 
         total_logs = len(logs)
-        for i, log_entry in enumerate(logs, 1):
-            logging.info(f"Processing log entry {i}/{total_logs}")
+        for i in range(0, total_logs, batch_size):
+            log_batch = logs[i : i + batch_size]
+            batch_num = (i // batch_size) + 1
+            total_batches = (total_logs + batch_size - 1) // batch_size
+            logging.info(f"Processing log batch {batch_num}/{total_batches}")
 
             await self.agent.model_context.clear()
 
-            next_log_entry = logs[i] if i < total_logs else None
+            next_log_entry = (
+                logs[i + batch_size] if i + batch_size < total_logs else None
+            )
 
             recent_frames = (
                 previous_frames[-10:]
@@ -189,8 +193,8 @@ class LogConverter:
                 else previous_frames[:]
             )
 
-            speaker_frames, previous_frames = await self._process_log_entry(
-                log_entry, next_log_entry, recent_frames, frame_id
+            speaker_frames, previous_frames = await self._process_log_batch(
+                log_batch, next_log_entry, recent_frames, frame_id
             )
 
             all_frames.extend(speaker_frames)
