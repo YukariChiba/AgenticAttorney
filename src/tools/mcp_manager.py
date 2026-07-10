@@ -31,10 +31,22 @@ class McpToolManager:
     async def setup(self) -> list[McpToolAdapter]:
         for server_config in self.server_configs:
             if isinstance(server_config, StdioMcpServerConfig):
+                env = (server_config.env or {}).copy()
+                # Python logging
+                env["LOGLEVEL"] = "WARNING"
+                env["LOG_LEVEL"] = "WARNING"
+                env["PYTHONWARNINGS"] = "ignore"
+                # MCP SDK
+                env["MCP_LOG_LEVEL"] = "WARNING"
+                env["MCP_LOGGING_LEVEL"] = "WARNING"
+                # HTTPX
+                env["HTTPX_LOG_LEVEL"] = "WARNING"
+                # Node.js
+                env["NODE_NO_WARNINGS"] = "1"
                 params = StdioServerParams(
                     command=server_config.command,
                     args=server_config.args,
-                    env=server_config.env,
+                    env=env,
                     read_timeout_seconds=server_config.read_timeout_seconds,
                 )
             elif isinstance(server_config, HttpMcpServerConfig):

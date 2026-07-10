@@ -6,7 +6,7 @@ objlol: 21
 
 ## 立场
 
-{stance}
+{{stance}}
 
 ## 身份
 

@@ -72,7 +72,7 @@ objlol: 角色在 objection.lol 中对应的 ID，用于生成剧本，没有可
 
 ## 立场
 
-{stance}
+{{stance}}
 
 ## 身份
 

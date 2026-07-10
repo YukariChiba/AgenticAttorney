@@ -2,6 +2,20 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, RootModel
 
+_TEXT_TAGS = [
+    "[#/r]",
+    "[#/b]",
+    "[#/g]",
+    "[#/y]",
+    "[/#]",
+    "[#bgmfi]",
+    "[#bgmfo]",
+    "[#bgms]",
+    "[#bgss]",
+    "[#fs]",
+    "[#fm]",
+    "[#fl]",
+]
 
 class Frame(BaseModel):
     character: Annotated[int, "角色的 ID"]

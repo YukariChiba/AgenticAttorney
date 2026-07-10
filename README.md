@@ -26,6 +26,11 @@
 
 - `prompts/topics/*.md`: 剧本介绍
 
+### 导演提示词:
+
+- `prompts/director/system.md`: 导演系统提示词
+- `prompts/director/user.md`: 导演用户提示词模板
+
 ### 角色提示词:
 
 - `prompts/agents/common/`: 角色相关的公共部分
