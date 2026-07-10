@@ -35,7 +35,7 @@ class ActorAgentManager:
         for agent_name in self.config.actor.teams.defense:
             agent = self.factory.create_debate_agent(agent_name, "defense", tools or [])
             self._add_agent(agent_name, agent, f"agents/defense/{agent_name}")
-            self.prosecution_agents.append(agent)
+            self.defense_agents.append(agent)
 
         judge = self.factory.create_judge_agent(self.config.actor.teams.judge)
         self._add_agent(

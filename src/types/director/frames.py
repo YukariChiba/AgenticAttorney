@@ -54,6 +54,7 @@ class DirectorFrame(BaseModel):
             "text": self.text,
             "poseId": self.poseId,
             "moveToNext": self.moveToNext,
+            "talk": self.talk,
         }
         if self.speechBubble is not None:
             result["speechBubble"] = self.speechBubble
