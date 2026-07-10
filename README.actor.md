@@ -125,7 +125,9 @@ negative_stance: 反方立场描述
 
 ## 添加自定义 MCP
 
-在 `config.json` 的 `mcp_servers` 中添加新配置，例如：
+在 `config.json` 的 `mcp_servers` 中添加新配置。通过 `type` 字段选择传输方式，支持 `stdio`（本地进程）与 `http`（Streamable HTTP 远程服务）两种。
+
+### stdio（本地进程）
 
 ```json
 {
@@ -136,6 +138,27 @@ negative_stance: 反方立场描述
   "read_timeout_seconds": 20
 }
 ```
+
+### http（Streamable HTTP 远程服务）
+
+```json
+{
+  "type": "http",
+  "url": "https://your-mcp-server.example.com/mcp",
+  "headers": { "Authorization": "Bearer xxx" },
+  "timeout": 30,
+  "sse_read_timeout": 300,
+  "terminate_on_close": true
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| `url` | MCP 服务端点地址 |
+| `headers` | 请求头（如鉴权信息） |
+| `timeout` | HTTP 常规操作超时（秒） |
+| `sse_read_timeout` | SSE 读取超时（秒） |
+| `terminate_on_close` | 关闭时是否终止会话 |
 
 ## 内置辩论主题
 

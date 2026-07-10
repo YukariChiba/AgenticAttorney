@@ -64,6 +64,14 @@
                 "command": "npx",
                 "args": ["-y", "@jjfather/civil-code-of-china-mcp"],
                 "read_timeout_seconds": 20
+            },
+            {
+                "type": "http",
+                "url": "https://example.com/mcp",
+                "headers": { "Authorization": "Bearer {TOKEN}" },
+                "timeout": 30,
+                "sse_read_timeout": 300,
+                "terminate_on_close": true
             }
         ]
     },

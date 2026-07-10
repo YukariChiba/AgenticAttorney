@@ -6,11 +6,16 @@ from autogen_ext.tools.mcp import (
     StdioMcpToolAdapter,
     StdioServerParams,
     StreamableHttpMcpToolAdapter,
+    StreamableHttpServerParams,
     create_mcp_server_session,
     mcp_server_tools,
 )
 
-from src.types.actor.config import McpServerConfig
+from src.types.actor.config import (
+    HttpMcpServerConfig,
+    McpServerConfig,
+    StdioMcpServerConfig,
+)
 
 McpToolAdapter: TypeAlias = (
     StdioMcpToolAdapter | SseMcpToolAdapter | StreamableHttpMcpToolAdapter
@@ -25,12 +30,23 @@ class McpToolManager:
 
     async def setup(self) -> list[McpToolAdapter]:
         for server_config in self.server_configs:
-            params = StdioServerParams(
-                command=server_config.command,
-                args=server_config.args,
-                env=server_config.env,
-                read_timeout_seconds=server_config.read_timeout_seconds,
-            )
+            if isinstance(server_config, StdioMcpServerConfig):
+                params = StdioServerParams(
+                    command=server_config.command,
+                    args=server_config.args,
+                    env=server_config.env,
+                    read_timeout_seconds=server_config.read_timeout_seconds,
+                )
+            elif isinstance(server_config, HttpMcpServerConfig):
+                params = StreamableHttpServerParams(
+                    url=server_config.url,
+                    headers=server_config.headers,
+                    timeout=server_config.timeout,
+                    sse_read_timeout=server_config.sse_read_timeout,
+                    terminate_on_close=server_config.terminate_on_close,
+                )
+            else:
+                continue
             session = await self.stack.enter_async_context(
                 create_mcp_server_session(params)
             )

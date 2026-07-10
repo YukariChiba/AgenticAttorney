@@ -1,3 +1,5 @@
+from typing import Annotated, Literal
+
 from pydantic import BaseModel, Field
 
 from src.types.model_config import ModelConfig
@@ -11,12 +13,27 @@ class TeamsConfig(BaseModel):
     witness: list[str] = Field(alias="witness")
 
 
-class McpServerConfig(BaseModel):
-    type: str = "stdio"
+class StdioMcpServerConfig(BaseModel):
+    type: Literal["stdio"] = "stdio"
     command: str
     args: list[str] = Field(default_factory=list)
     env: dict[str, str] | None = None
     read_timeout_seconds: int = 20
+
+
+class HttpMcpServerConfig(BaseModel):
+    type: Literal["http"] = "http"
+    url: str
+    headers: dict[str, str] | None = None
+    timeout: float = 30.0
+    sse_read_timeout: float = 300.0
+    terminate_on_close: bool = True
+
+
+McpServerConfig = Annotated[
+    StdioMcpServerConfig | HttpMcpServerConfig,
+    Field(discriminator="type"),
+]
 
 
 class ActorConfig(BaseModel):
