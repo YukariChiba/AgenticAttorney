@@ -26,5 +26,6 @@
 
 - `model`: LLM 配置（建议 temperature 较高以增加创意）
 - `buffer_size`: 上下文缓冲区大小
+- `batch_size`: 每批次处理的日志条目数（每批次生成一整段剧本）
 - `max_retries`: 验证失败时的最大重试次数
 - `cache_duration`: API 资源缓存时间（秒）

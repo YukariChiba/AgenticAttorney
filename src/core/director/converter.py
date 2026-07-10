@@ -39,6 +39,8 @@ class LogConverter:
 
         # create agent
         template_engine: TemplateEngine = TemplateEngine(self.config)
+        self._template_engine = template_engine
+        self._user_template = template_engine._load_raw_content("director/user")
         system_template = template_engine._load_raw_content("director/system")
         system_msg = self.prompt_builder.build_system_prompt(system_template)
         model_config = self.config.director.model.to_component_config()
@@ -69,10 +71,12 @@ class LogConverter:
         previous_frames: list[Frame],
         frame_id: int,
     ) -> tuple[list[DirectorFrame], list[Frame]]:
-        template_engine: TemplateEngine = TemplateEngine(self.config)
-        user_template = template_engine._load_raw_content("director/user")
         user_msg = self.prompt_builder.build_user_prompt(
-            user_template, log_entries, next_log_entry, previous_frames, self.assets
+            self._user_template,
+            log_entries,
+            next_log_entry,
+            previous_frames,
+            self.assets,
         )
 
         frame_list: FrameList | None = None
@@ -188,8 +192,8 @@ class LogConverter:
             )
 
             recent_frames = (
-                previous_frames[-10:]
-                if len(previous_frames) > 10
+                previous_frames[-20:]
+                if len(previous_frames) > 20
                 else previous_frames[:]
             )
 

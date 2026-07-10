@@ -25,6 +25,7 @@ class AssetsManager:
         self._characters: list[Character] | None = None
         self._music: list[Music] | None = None
         self._sounds: list[Sound] | None = None
+        self._background_mapping: dict[str, int] | None = None
 
     def fetch_characters(self) -> list[Character]:
         if self._characters is not None:
@@ -96,8 +97,9 @@ class AssetsManager:
         return char_info.speechBubbles.get(bubble_name)
 
     def get_background_id(self, side: str) -> int:
-        background_file = DIRECTOR_DATA_DIR / "background.json"
-        with open(background_file, encoding="utf-8") as f:
-            background_mapping = json.load(f)
-        result = background_mapping.get(side, 177)
+        if self._background_mapping is None:
+            background_file = DIRECTOR_DATA_DIR / "background.json"
+            with open(background_file, encoding="utf-8") as f:
+                self._background_mapping = json.load(f)
+        result = self._background_mapping.get(side, 177)
         return result if result is not None else 177
