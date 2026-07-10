@@ -84,7 +84,7 @@ class PromptBuilder:
             side = char_info.side if char_info else "unknown"
 
             formatted_logs.append(
-                f"主讲人: {speaker_cn} ({speaker_en}) (阵营： {side})\n核心台词:\n```\n{content}\n```"
+                f"主讲人: {speaker_cn} ({speaker_en}) (阵营： {side}) (ID: {char_id})\n核心台词:\n```\n{content}\n```"
             )
         return "\n\n".join(formatted_logs)
 
@@ -112,4 +112,4 @@ class PromptBuilder:
         char_info = character if character else assets_manager.get_character_info(char_id)
         speaker_en = char_info.name if char_info else "unknown"
 
-        return f'{speaker_cn} ({speaker_en}):\n  "{content}"'
+        return f'{speaker_cn} ({speaker_en}) (ID: {char_id}):\n  "{content}"'
